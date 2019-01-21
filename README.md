@@ -3,7 +3,11 @@
 ## Need to make code work for large pages. !!
 - Able to handle large pages like http://stevetarzia.com/libc.html
     - Not easy!!! [Must google](https://www.google.com/search?q=get+all+data+recv+socket&oq=get+all+data+recv+socket&aqs=chrome..69i57.5425j0j4&sourceid=chrome&ie=UTF-8) 
-        
+- Need to make sure what the code returns is exactly whats asked
+    - HTTP response >= 400 returns a nonzero exit... AND PRINT RESPONSE BODY IF ANY!
+    - On Piazza instructor says to use sys.exit() for exit codes! 
+    - The above are the only things missed... but need to double check it exactly as instructed
+
 ## Everything below i think is done
 - All request use the HTTP GET method
 - Completion and failure
