@@ -2,7 +2,6 @@
 ### PART 2 
 
 ### PART 1 is done
-## Need to make code work for large pages. !!
 - Need to make sure what the code returns is exactly whats asked
     - HTTP response >= 400 returns a nonzero exit... AND PRINT RESPONSE BODY IF ANY!
     - On Piazza instructor says to use sys.exit() for exit codes! 
