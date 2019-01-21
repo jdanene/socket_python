@@ -1,8 +1,10 @@
 # EECS340
 
-Write Todos here:
-
-
+## Need to make code work for large pages. !!
+- Able to handle large pages like http://stevetarzia.com/libc.html
+    - Not easy!!! [Must google](https://www.google.com/search?q=get+all+data+recv+socket&oq=get+all+data+recv+socket&aqs=chrome..69i57.5425j0j4&sourceid=chrome&ie=UTF-8) 
+        
+## Everything below i think is done
 - All request use the HTTP GET method
 - Completion and failure
     - The program should return a unix exit code of 0 if eventually get a "200 OK" response 
