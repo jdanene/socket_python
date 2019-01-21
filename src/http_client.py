@@ -1,4 +1,4 @@
-import socket, argparse, re, sys, functools, time
+import socket, argparse, re, sys, functools, os, time
 """
 Python script for a simple command-line HTTP client implemented using the BSD socket interface.
 
@@ -8,22 +8,13 @@ Usage: python http_client.py [url]
     
     url: The http web address to fetch. 
 
-Returns: The body of the response (if successful) printed to stdout, 
-         otherwise an error message + error code
-
 Original Authors: Jide Anene and Sam Detjen
 """
-#url_dict = {'host': 'www.airbedandbreakfast.com', 'path': '/', 'port': 80}
 
-#body = get_header_body(client_request(url_dict))
-
-#python http_client.py maps.google.com
-
-
-RESPONSE_ERROR_CODE = "2\n"
-CONTENT_ERROR_CODE = "3\n"
-URL_ERROR_CODE = "4\n"
-REDIRECT_ERROR_CODE= "5\n"
+RESPONSE_ERROR_CODE = 2
+CONTENT_ERROR_CODE = 3
+URL_ERROR_CODE = 4
+REDIRECT_ERROR_CODE= 5
 
 def main():
     # Parse command line arguments
@@ -37,7 +28,8 @@ def main():
 
     # check if user indicated HTTP protocol in request
     if is_urlerror(args.url):
-        return URL_ERROR_CODE
+        sys.stderr.write(str(URL_ERROR_CODE)+"\n")
+        sys.exit(URL_ERROR_CODE) 
     # get http response and print output
     else:
         url_dict = get_clean_url(args.url)
@@ -47,30 +39,37 @@ def main():
 
 def print_request(resp, num_redirects = 0):
     """
-    Prints the html body of the final request if no error code, otherwise prints the error code. For
-    301 or 302 redirects, keeps hopping through links  until failure or success. 
+    Prints the html body of the final request if no error code, otherwise prints the error code-- except
+    when the HTTP status code >= 400, in this case prints html body and the error code. 
+    For 301 or 302 HTTP redirects, implements a recursive loop until failure (exit code of >= iterations)
+    or success. 
     
     Args: 
        resp (string): Raw response buffer data
        num_redirects (int): number of redirects on current chain. valid for codes 301 or 302 
     """
-
     header_body_dict = get_header_body(resp)
     header_dict = header_body_dict['header']
     header_error = is_headererror(header_dict)
+
     if header_error:
-        sys.stdout.write(header_error)
+        if header_error == 2: 
+            sys.stdout.write((header_body_dict['body']).decode())
+        sys.stderr.write(str(header_error)+"\n")
+        sys.exit(header_error) 
     elif num_redirects >=10:
-        sys.stdout.write(REDIRECT_ERROR_CODE)
+        sys.stderr.write(str(REDIRECT_ERROR_CODE)+"\n")
+        sys.exit(REDIRECT_ERROR_CODE) 
     elif ((header_dict['Status-Code']== 301) or (header_dict['Status-Code']== 302)):
         raw_url = header_dict['Location'].strip()
         print(paste("Redirected to: ",raw_url).decode(), file=sys.stderr)
         print_request(client_request(get_clean_url(raw_url)), num_redirects+1)
     else:
-        sys.stdout.write((header_body_dict['body']+b"\n0\n").decode())
+        sys.stdout.write((header_body_dict['body']).decode())
+        sys.exit(0) 
 
 def is_headererror(header_dict):
-        """
+    """
     Checks the header for one of the errors specified in project
     
     Args: 
@@ -82,7 +81,7 @@ def is_headererror(header_dict):
                          .
                          .
     Returns:
-        (boolean): An False if no errors, otherwise returns the specific header error. 
+        (boolean):False if no errors, otherwise returns the specific header error. 
     """
 
     if is_respcode_error(header_dict): 
@@ -221,7 +220,8 @@ def client_request(url_dict):
         port = url_dict["port"]
         protocol = "HTTP/1.1"
         buffersize = 4096
-        request = paste("GET"," ",path," ", protocol, "\r\n","Host:"," ", host,"\r\n\r\n")
+        request = paste("GET"," ",path," ", protocol, "\r\n","Host:"," ", \
+                        host,"\r\n","Connection: ","close", "\r\n\r\n")
 
         s.connect((host,port)) # Open a connection
         s.send(request) #Send the request. The function `paste` byte encodes the string.  
@@ -231,9 +231,10 @@ def client_request(url_dict):
         while True:
             results = s.recv(buffersize)
             data += results
-            if (len(results)<= buffersize):
+            if not len(results):
                 break
-    return results
+    return data
+
 
 def is_urlerror(raw_url):
     """
