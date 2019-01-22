@@ -101,18 +101,19 @@ def get_header_body(resp):
     Splits a `resp' into the http header, and http body. 
 
     Args: 
-       buffer (string): Raw response buffer data
+       resp (string): Raw response buffer data
 
     Returns:
-       dict: {"header": string, "body": string}
-              - dict["header"] is a dict of HTTP header keys:values pairs. 
+       dict: {"header": dict , "body": string}
+              - dict["body"] is text of the HTTP body 
+              - dict["header"] is a dict of HTTP header keys,values pairs. 
                  For example:
                     - dict["header"]["Status-Code"] the status code of HTTP (e.g 200)
                     - dict["header"]["Content-Type"] the content type of HTTP (e.g text/html)
+                    - dict["header"]["Location"] if the status code is 301 or 302 then this contains the url of the redirect. 
                          .
                          .
                          .
-              - dict["body"] is text of the HTTP body 
     """
     bufferlst = resp.split(str.encode("\r\n\r\n")) #split data into header and body based on delimiter "\r\n\r\n"
     header = bufferlst[0]
@@ -196,8 +197,8 @@ def get_clean_url(raw_url):
     path = "" if len(host_path)<2 else host_path[1] #initialize path if none is found in the string split
     path = re.sub(r"\/$","",path) #remove trailing backslash
     path = path if re.search(r"^\/",path) else "/"+path #add backslash to the front if it is missing
+    
     clean_url["path"] = path.strip() 
-
     clean_url["host"] = host_path[0]
     return clean_url
 
@@ -207,12 +208,12 @@ def client_request(url_dict):
 
     Args:
         url_dict (dict): {"host": string, "path": string,"port": boolean}
-                - dict["host"] is the url host name
-                - dict["path"] is the url path name 
-                - dict["port"] is either the port associated with the url if it is specified, 
-                               or 80 if it is not specified. 
+                        - dict["host"] is the url host name
+                        - dict["path"] is the url path name 
+                        - dict["port"] is either the port associated with the url if it is specified, 
+                                       or 80 if it is not specified. 
     Returns: 
-        string: The raw output string in byte format.
+        string: The raw output data string in byte format.
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         host = url_dict["host"]
