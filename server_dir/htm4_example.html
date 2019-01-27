@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>What's HTML4? - HTML</title>
+<link rel="stylesheet" href="../css/base.css" type="text/css" />
+<meta name="author" content="Neil Williams" />
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+<div class="header" id="pagetop">
+<h1>What's HTML4 all about?</h1>
+<p class="para">HTML4 is the latest standard released by the
+<a href="http://www.w3.org">World Wide Web consortium</a> (www.w3.org) for web pages. Making sure that your pages comply with standards like HTML4 will allow your site to be viewed by the maximum number of visitors. Since HTML4 was published, <a href="../query/glossaryB.shtml#browser">browsers</a> have moved on and support for HTML4 is becoming much more consistent between updated browsers. Previous versions of codehelp.co.uk had to provide variations within the HTML4 standard because not all visitors had upgraded their browsers to the latest versions (notably upgrading from Netscape4 and IE4). Changes in browser support have led to a significant change in site design for many sites, including CodeHelp. Code should now be written to fit the HTML4 standard without concerns about browser bugs or extensive testing on multiple browsers / platforms. Write your HTML4 + <acronym title="cascading style sheets">CSS</acronym>, <a href="http://validator.w3.org/">check the code</a> and maybe just test the appearance in two browsers.</p>
+<p class="para">HTML4 is the first version to include <a href="css.html">cascading style sheets</a> as part of the HTML standard - HTML4 is now reliant on style sheets to provide precise control of data within the page. HTML4 also makes the issue of <a href="deprecated.html">deprecated</a> tags much more important. As browsers continue to develop and later versions of HTML are published, deprecated tags and attributes will be dropped from browser support - pages relying on them will simply fail to work. It is all part of a move away from ad-hoc development of HTML (led by the browser designers) as with HTML3 to an organised and structured development that all browsers follow consistently. To achieve the transition, the <acronym title="World Wide Web Consortium">W3C</acronym> provide three versions of HTML4 - transitional, frameset and strict. The intention is for sites to move first to transitional (using frameset for pages that still use frames) and on to strict in time. (Strict requires the removal of all deprecated tags and attributes for validation). Achieving transitional validation is all about good coding practice. Tags must be <a href="../query/glossaryT.shtml#table">nested</a> properly and all <a href="../query/glossaryE.shtml#end">end tags</a> must be present.</p>
+<p class="para">Use one of the following definitions as the first line of all HTML files to tell the browser to use HTML4 conventions:</p>
+<h3>Transitional</h3>
+<pre>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd"&gt;
+&lt;html&gt;&lt;head&gt;
+</pre>
+<h3>Frameset</h3>
+<pre>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+"http://www.w3.org/TR/html4/frameset.dtd"&gt;
+&lt;html&gt;&lt;head&gt;
+</pre>
+<h3>Strict</h3>
+<pre>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;
+</pre>
+<h3>XHTML</h3>
+<p class="para">XHTML is often output from translations of XML files and is simply HTML with extra syntax rules. <abbr title="for example">e.g.</abbr> <code>&lt;br&gt;</code> doesn't have an empty tag in HTML, so just as in XML, it needs to be declared as empty in XHTML: <code>&lt;br /&gt;</code>. Another tag that can catch you out in XHTML is meta - make sure each meta tag ends in <code> /&gt;</code> not just <code>&gt;</code>. All tags in XHTML must be nested correctly and all end tags must be used. Note also the namespace and language attributes of the html tag.</p>
+<pre>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"&gt;
+</pre>
+<hr /><p id="footer">
+[<a href="javascript:window.history.back();" title="Previous page">Back</a>]
+[<a href="../index.html" title="Home">Home</a>] [<a href="#pagetop" title="top">Top of page</a>] [<a href="html.html" title="All the HTML help your website needs">HTML Index</a>] [<a href="deprecated.html" title="Which tags are deprecated in HTML4?">Deprecated tags</a>] [<a href="css.html" title="Stylesheet syntax, classes and ID's">CSS - Stylesheets</a>] [<a href="css2.html" title="Style classes, ID's and altered HTML tags">Stylesheet syntax</a>] [<a href="css3.html" title="Using CSS to avoid tags deprecated in HTML4">Strict HTML and CSS</a>] [<a href="css4.html" title="All the CSS attributes">Complete CSS</a>] [<a href="dhtml.html"
+title="Dynamic HTML - movement without plug-ins">Dynamic HTML</a>]
+[<a href="../code/codebooks.shtml" title="useful code books">Source code books</a>] [<a href="../query/glossary.shtml" title="HTML terms and tags explained">CodeHelp HTML Glossary</a>] [<a href="../forum/index.html" title="pose your question to the forum">CodeHelp online forum</a>]
+</p><hr/><div id="licence" style="font-size:0.85em;margin-right:15em;">
+<p>This is part of www.codehelp.co.uk Copyright &copy; 1998-2004 Neil Williams<br/>
+See the file <a href="about.html#licence">about.html</a> for
+copying conditions.</p></div>
+</div>
+<div id="navpic">
+<img class="logogif" src="../images/logo.png" alt="CodeHelp" /></div>
+<div id="navbar" class="feature">
+<ul class="halfpara">
+<li class="x"><a href="../index.html"
+title="home">home page</a></li>
+<li class="x"><a href="html.html"
+title="All the HTML help your website needs">HTML Index</a></li>
+<li class="x"><a href="deprecated.html"
+title="Which tags are deprecated in HTML4?">Deprecated tags</a></li>
+<li class="x"><a href="css.html"
+title="Stylesheet syntax, classes and ID's">CSS - Stylesheets</a></li>
+<li class="x"><a href="css2.html"
+title="Style classes, ID's and altered HTML tags">Stylesheet syntax</a></li>
+<li class="x"><a href="css3.html"
+title="Using CSS to avoid tags deprecated in HTML4">Strict HTML and CSS</a></li>
+<li class="x"><a href="css4.html"
+title="All the CSS attributes">Complete CSS</a></li>
+<li class="x"><a href="dhtml.html"
+title="Dynamic HTML - movement without plug-ins">Dynamic HTML</a></li>
+</ul>
+<img id="navbargif" src="../images/navbar.png" alt="navigation bar" />
+<br /><ul class="halfpara">
+<li class="x"><a href="../code/codebooks.shtml"
+title="useful code books">Source code books</a></li>
+<li class="x"><a href="../query/glossary.shtml"
+title="HTML terms and tags explained">CodeHelp Glossary</a></li>
+<li class="x"><a href="../forum/index.html"
+title="pose your question to the forum">CodeHelp online forum</a></li>
+</ul>
+<div><a
+href="http://validator.w3.org/check?uri=http%3A%2F%2Fwww.codehelp.co.uk%2Fhtml%2Fhtml4.html">
+<img src="../images/valid-xhtml11.png" class="validgif" alt="Valid XHTML 1.1!" /></a>
+</div>
+<br />Neil Williams:<br />
+<a href="../html/about.html#contact">
+<img id="mailgif" src="../images/mailme.png" alt="e-mail me" /><br />contact me</a>
+</div>
+</body>
+</html>
+
