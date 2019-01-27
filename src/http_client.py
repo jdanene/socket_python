@@ -215,7 +215,8 @@ def client_request(url_dict):
     Returns: 
         string: The raw output data string in byte format.
     """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: #creates the client process "door", creates client socket, it will be open listen for messages from the
+                                                                 # untill told to stop maybe by HTTP protocl
         host = url_dict["host"]
         path = url_dict["path"]
         port = url_dict["port"]
@@ -224,8 +225,9 @@ def client_request(url_dict):
         request = paste("GET"," ",path," ", protocol, "\r\n","Host:"," ", \
                         host,"\r\n","Connection: ","close", "\r\n\r\n")
 
-        s.connect((host,port)) # Open a connection
-        s.send(request) #Send the request. The function `paste` byte encodes the string.  
+        s.connect((host,port)) # Open a connection with the network destination address IP.Adress & port.
+                                # note implicitly this function sends a DNS to get the IP address if given a host name
+        s.send(request) #Send the request. The function `paste` byte encodes the string. Since TCP/UDP only send bytes.  
 
         #Recieve and Buffer the data. 
         data = b''
