@@ -138,8 +138,6 @@ class HttpServer1:
         req_filename = re.sub("/","",req_filename)
         if req_filename in self.fnames:
             extension = req_filename.split('.')[1]
-            if extension != "htm" and extension != "html":
-                return "403"
             last_modified = self.format_datetime(os.path.getmtime(os.path.join(self.html_path,req_filename)))
             content_length = os.path.getsize(os.path.join(self.html_path,req_filename))
             content_type = self._get_content_type(os.path.join(self.html_path,req_filename))
@@ -154,14 +152,19 @@ class HttpServer1:
             return False
 
     def http_error(self, error_type):
+        """
+        Returns HTTP error message
+        """
         part1 = "<!DOCTYPE html> <HTML> <BODY> <h1>"
         part2 = error_type
         part3 = "</h1> </BODY> </HTML>"
         message = str.encode(part1 + part2 + part3)
+
         content_length = sys.getsizeof(message)
         date = self.format_datetime()
         last_modified = date
         content_type = "text/html; charset=utf-8"
+
         return paste("HTTP/1.1 200 OK","\r\n","Connection: ","close","\r\n",
                           "Date: ",date,"\r\n","Last-Modified: ",last_modified,"\r\n",
                           "Content-Length: ",content_length,"\r\n","Content-Type: ",content_type,"\r\n\r\n") + message
@@ -177,24 +180,16 @@ class HttpServer1:
         error_403 = "403 Forbidden"
         date = self.format_datetime()
 
-        # function to output HTTP headers for different type of errors.
-
-
-    ##    http_error = lambda error_type, connection_type: paste(error_type,"\r\n","Connection: ",connection_type,"\r\n",
-        ##                                                       "Date: ",date,"\r\n", "Content-Length: ",0,"\r\n\r\n", error_message(error_type))
-
-
-
-
         if header_dict["req_type"] != 'GET':
             return self.http_error(error_400)
-        elif header_dict['http_version'] != 'HTTP/1.1':
+        if header_dict['http_version'] != 'HTTP/1.1':
             return self.http_error(error_505)
+        if not re.search(r"htm[l]?$", header_dict['req_file']):
+            return self.http_error(error_403)            
+
         good_req = self.is_goodrequest(header_dict['req_file'])
         if not good_req:
             return self.http_error(error_404)
-        elif good_req == "403":
-            return self.http_error(error_403)
         else:
             return good_req
 
@@ -260,9 +255,6 @@ class HttpServer1:
 
                         #gets the request to give back to client
                         http_request = self.get_HTTP_response(header_dict)
-
-
-
 
                         #send the data to client
                         conn.sendall(http_request)
