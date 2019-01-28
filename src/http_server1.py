@@ -160,7 +160,7 @@ class HttpServer1:
         part3 = "</h1> </BODY> </HTML>"
         message = str.encode(part1 + part2 + part3)
 
-        content_length = sys.getsizeof(message)
+        content_length = len(message)
         date = self.format_datetime()
         last_modified = date
         content_type = "text/html; charset=utf-8"

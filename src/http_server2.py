@@ -40,7 +40,6 @@ ToDo: Since `test_http_server2` imports methods from `test_http_server1`. Once w
 
 """
 
-http://localhost:9000/rfc2616.html
 
 def main():
     # Parse command line arguments
@@ -147,7 +146,6 @@ class HttpServer2(HttpServer1):
         :param sock:
         :return:
         """
-
         input_data = sock.recv(1024)
         if input_data: 
             self.data_dict[sock].inb += input_data
@@ -159,7 +157,8 @@ class HttpServer2(HttpServer1):
                     # Associate to the socket its parsed header
                     self.data_dict[sock].header = self.parse_header(self.data_dict[sock].inb)
                     # Get appropriate HTTP response for socket put it in a buffer and then associate it to the socket
-                    self.data_dict[sock].outb = memoryview(self.get_HTTP_response(self.data_dict[sock].header)) #Memoryview puts it in a buffer 
+                    data_to_send = self.get_HTTP_response(self.data_dict[sock].header)
+                    self.data_dict[sock].outb = memoryview(data_to_send) #Memoryview puts it in a buffer 
                     # Set boolean so we know that we can write to the socket now. 
                     self.data_dict[sock].header_seen = True
 
@@ -175,13 +174,11 @@ class HttpServer2(HttpServer1):
         :param sock:
         :return:
         """
-        if self.data_dict[sock].outb: 
-            # Send a piece of data to the client from the message memoryview (aka buffer)
-            sent = sock.send(self.data_dict[sock].outb)
-            # Build a new memoryview (aka buffer) object pointing to the data which remains to be sent
-            self.data_dict[sock].outb = self.data_dict[sock].outb[sent:]
-        else:
-            # Since there are no more message delete the socket from readlist, delete socket data, and close the socket. 
+        # Send a piece of data to the client from the message memoryview (aka buffer)
+        sent = sock.send(self.data_dict[sock].outb)
+        # Build a new memoryview (aka buffer) object pointing to the data which remains to be sent
+        self.data_dict[sock].outb = self.data_dict[sock].outb[sent:]
+        if not (sent > 0):
             self.terminate_socket(sock)
         pass
 
