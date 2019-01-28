@@ -165,7 +165,7 @@ class HttpServer1:
         last_modified = date
         content_type = "text/html; charset=utf-8"
 
-        return paste("HTTP/1.1 200 OK","\r\n","Connection: ","close","\r\n",
+        return paste("HTTP/1.1 ", error_type,"\r\n","Connection: ","close","\r\n",
                           "Date: ",date,"\r\n","Last-Modified: ",last_modified,"\r\n",
                           "Content-Length: ",content_length,"\r\n","Content-Type: ",content_type,"\r\n\r\n") + message
 
