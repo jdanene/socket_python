@@ -1,6 +1,6 @@
 import socket, argparse, re, sys, functools, os, platform, pytz
 from datetime import timezone, datetime, timedelta
-try: 
+try:
     from tzlocal import get_localzone
 except:
     sys.exit('The package "tzlocal" is needed to proceed')
@@ -13,10 +13,10 @@ and serves any files in the current directory if their names ends w/ .html or .h
 Written and tested in Python 3.6
 
 Usage: python http_server1.py [port]
-    
+
     port: The default port to "hear" incoming connections for TCP 3-way handshake
 
-Testing example: 
+Testing example:
     Step 1: from shell set directory to ./src
 
     Step 2: from shell run the unit test
@@ -30,7 +30,7 @@ Testing example:
         >> http://localhost:3000/htm4_example.html
 
 ToDo: Make server support 'HEAD' request instead of just 'GET'
-ToDo: For invalid responses automatically output a HTML invalid page. 
+ToDo: For invalid responses automatically output a HTML invalid page.
 
 """
 
@@ -48,14 +48,14 @@ def main():
     args.port = int(args.port)
     assert args.port >= 1024, "Port Number must be >= 1024"
 
-    # Run HTTP server 
+    # Run HTTP server
     server = HttpServer1()
     server.server(args.port)
 
 def paste(*args):
     """
     Concatenates string (or numbers) into a single string encoded into bytes
-    
+
     Args:
         *args: either strings or numbers
     Returns:
@@ -128,8 +128,8 @@ class HttpServer1:
 
         """
         Returns the response header for the requested file `req_filename` if `req_filename`
-        is in our HTML directory, otherwise returns False. 
-        
+        is in our HTML directory, otherwise returns False.
+
         Input:
           req_filename (str) : Name of the request file for instance "rfc2616.html"
         """
@@ -138,18 +138,21 @@ class HttpServer1:
 
         req_filename = re.sub("/","",req_filename)
         if req_filename in self.fnames:
+            extension = req_filename.split('.')[1]
+            if extension != "htm" and extension != "html":
+                return "403"
             last_modified = self.format_datetime(os.path.getmtime(os.path.join(self.html_path,req_filename)))
             content_length = os.path.getsize(os.path.join(self.html_path,req_filename))
             content_type = self._get_content_type(os.path.join(self.html_path,req_filename))
 
             with open(os.path.join(self.html_path,req_filename),'r') as html_file:
-                response =  paste("HTTP/1.1 200 OK","\r\n","Connection: ","close","\r\n", 
+                response =  paste("HTTP/1.1 200 OK","\r\n","Connection: ","close","\r\n",
                                   "Date: ",date,"\r\n","Last-Modified: ",last_modified,"\r\n",
                                   "Content-Length: ",content_length,"\r\n","Content-Type: ",content_type,"\r\n\r\n",
                                   html_file.read())
             return response
         else:
-            return False 
+            return False
 
     def get_HTTP_response(self,header_dict):
         """
@@ -159,34 +162,36 @@ class HttpServer1:
         error_400 = "400 Bad Request"
         error_505 = "505 Version Not Supported"
         error_404 = "404 Not Found"
+        error_403 = "403 Forbidden"
         date = self.format_datetime()
-        
-        # function to output HTTP headers for different type of errors. 
-        http_error = lambda error_type, connection_type: paste(error_type,"\r\n","Connection: ",connection_type,"\r\n", 
+
+        # function to output HTTP headers for different type of errors.
+        http_error = lambda error_type, connection_type: paste(error_type,"\r\n","Connection: ",connection_type,"\r\n",
                                                                "Date: ",date,"\r\n", "Content-Length: ",0,"\r\n\r\n")
 
         if header_dict["req_type"] != 'GET':
             return http_error(error_400, "close")
         elif header_dict['http_version'] != 'HTTP/1.1':
             return http_error(error_505, "close")
-
         good_req = self.is_goodrequest(header_dict['req_file'])
         if not good_req:
             return http_error(error_404, "close")
+        elif good_req == "403":
+            return http_error(error_403, "close")
         else:
             return good_req
 
     def get_header_body(self,request):
             """
-            Splits a `request' into the http header, and http body. 
+            Splits a `request' into the http header, and http body.
 
-            Args: 
+            Args:
                request (string): Raw request buffer data
 
             Returns:
                dict: {"header": dict , "body": string}
-                      - dict["body"] is text of the HTTP body 
-                      - dict["header"] is a dict of HTTP header keys,values pairs. 
+                      - dict["body"] is text of the HTTP body
+                      - dict["header"] is a dict of HTTP header keys,values pairs.
                          For example:
                             - dict["header"]["req_type"] the request type of HTTP (e.g GET)
                             - dict["header"]["req_file"] the file requested of HTTP (e.g rfc2616.html)
@@ -203,9 +208,9 @@ class HttpServer1:
             #Split data into list based on delimeter "\r\n" then split again based on first occurence of ':'
             keyval_pairs = [item.split(str.encode(':'),1) for item in header.split(str.encode("\r\n"))]
             top_line_of_header = keyval_pairs[0][0].decode().split(" ")
-            keyval_pairs = keyval_pairs[1:] 
+            keyval_pairs = keyval_pairs[1:]
             header_dict = {entry[0].decode():entry[1].decode() for entry in keyval_pairs}
-            
+
             # label and put headers from first line header into header dictionary
             header_dict["req_type"] = top_line_of_header[0]
             header_dict["req_file"] = top_line_of_header[1]
@@ -214,29 +219,31 @@ class HttpServer1:
             return {"header":header_dict,"body":bufferlst[1]}
 
     def server(self, port = 12000, backlog = 20):
-        with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:        
-            s.bind(('',port)) 
+        with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+            s.bind(('',port))
 
             # The parameter below is the backlog. The backlog specifies the maximum
             # number of queued connections before the server starts rejection request.
-            # Hence is backlog == 0 once a connection is accepted all other connections will 
+            # Hence is backlog == 0 once a connection is accepted all other connections will
             # be rejected. The smaller the backlog the more rejections, the larger the backlog
-            # the less rejections. 
+            # the less rejections.
             s.listen(backlog)
             while True:
-                conn, addr = s.accept() 
+                conn, addr = s.accept()
                 with conn:
                     while True:
                         data = conn.recv(1024)
                         if not data:
+                            #indicates the end of the connection
                             break
 
-                        #Parses the http request. 
+                        #Parses the http request.
                         data_dict = self.get_header_body(data)
                         header_dict = data_dict["header"]
 
                         #gets the request to give back to client
                         http_request = self.get_HTTP_response(header_dict)
+
 
                         #send the data to client
                         conn.sendall(http_request)
@@ -246,4 +253,3 @@ class HttpServer1:
 
 if __name__ == '__main__':
     main()
-
