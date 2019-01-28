@@ -135,7 +135,6 @@ class HttpServer1:
         """
         connection = "close"
         date = self.format_datetime()
-
         req_filename = re.sub("/","",req_filename)
         if req_filename in self.fnames:
             extension = req_filename.split('.')[1]
@@ -154,6 +153,19 @@ class HttpServer1:
         else:
             return False
 
+    def http_error(self, error_type):
+        part1 = "<!DOCTYPE html> <HTML> <BODY> <h1>"
+        part2 = error_type
+        part3 = "</h1> </BODY> </HTML>"
+        message = str.encode(part1 + part2 + part3)
+        content_length = sys.getsizeof(message)
+        date = self.format_datetime()
+        last_modified = date
+        content_type = "text/html; charset=utf-8"
+        return paste("HTTP/1.1 200 OK","\r\n","Connection: ","close","\r\n",
+                          "Date: ",date,"\r\n","Last-Modified: ",last_modified,"\r\n",
+                          "Content-Length: ",content_length,"\r\n","Content-Type: ",content_type,"\r\n\r\n") + message
+
     def get_HTTP_response(self,header_dict):
         """
         Checks the HTTP request to see if its valid, and then outputs appropriate http response
@@ -166,18 +178,23 @@ class HttpServer1:
         date = self.format_datetime()
 
         # function to output HTTP headers for different type of errors.
-        http_error = lambda error_type, connection_type: paste(error_type,"\r\n","Connection: ",connection_type,"\r\n",
-                                                               "Date: ",date,"\r\n", "Content-Length: ",0,"\r\n\r\n")
+
+
+    ##    http_error = lambda error_type, connection_type: paste(error_type,"\r\n","Connection: ",connection_type,"\r\n",
+        ##                                                       "Date: ",date,"\r\n", "Content-Length: ",0,"\r\n\r\n", error_message(error_type))
+
+
+
 
         if header_dict["req_type"] != 'GET':
-            return http_error(error_400, "close")
+            return self.http_error(error_400)
         elif header_dict['http_version'] != 'HTTP/1.1':
-            return http_error(error_505, "close")
+            return self.http_error(error_505)
         good_req = self.is_goodrequest(header_dict['req_file'])
         if not good_req:
-            return http_error(error_404, "close")
+            return self.http_error(error_404)
         elif good_req == "403":
-            return http_error(error_403, "close")
+            return self.http_error(error_403)
         else:
             return good_req
 
@@ -243,6 +260,8 @@ class HttpServer1:
 
                         #gets the request to give back to client
                         http_request = self.get_HTTP_response(header_dict)
+
+
 
 
                         #send the data to client
