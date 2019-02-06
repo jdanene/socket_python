@@ -1,16 +1,10 @@
-# EECS340
-### PART 2 
+ # Low-level socket API for networking 
+ 
+`http_client.py`: implements a simple command-line HTTP client, using low-level BSD sockets in Python.
 
-### PART 1 is done
-- Need to make sure what the code returns is exactly whats asked
-    - HTTP response >= 400 returns a nonzero exit... AND PRINT RESPONSE BODY IF ANY!
-    - On Piazza instructor says to use sys.exit() for exit codes! 
-    - The above are the only things missed... but need to double check it exactly as instructed
+`http_server1.py`: HTTP server that handles one connection at a time and that serves any files in the current directory if their name ends with .html or .htm.
 
-
-*PROBLEM STATEMENT says to print out the HTML but all the rules talk about response codes. Im guessing print out HTML if it exits and always the nonzero numbers that indicate different types of failure (and success = 0) at the bottom. Clarify before submission** 
-
-
+`http_server2.py`: HTTP server support multiple connections using Unix `select command`
 
 
 
